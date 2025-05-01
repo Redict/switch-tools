@@ -1,0 +1,104 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  release:
+    types: [ created ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential autoconf automake libtool pkg-config liblz4-dev zlib1g-dev
+        
+    - name: Configure
+      run: |
+        ./autogen.sh
+        ./configure
+        
+    - name: Build
+      run: make
+      
+    - name: Create package
+      run: |
+        mkdir -p dist/linux
+        cp elf2nso elf2nro elf2kip build_pfs0 build_romfs nacptool npdmtool nxlink dist/linux/
+        cd dist
+        tar -czf switch-tools-linux.tar.gz linux
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: switch-tools-linux
+        path: dist/switch-tools-linux.tar.gz
+           
+  build-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: >-
+          mingw-w64-x86_64-toolchain
+          mingw-w64-x86_64-autotools
+          autoconf
+          automake
+          libtool
+          make
+          pkg-config
+          mingw-w64-x86_64-lz4
+          mingw-w64-x86_64-zlib
+          
+    - name: Configure
+      run: |
+        ./autogen.sh
+        ./configure
+        
+    - name: Build
+      run: make
+      
+    - name: Create package
+      run: |
+        mkdir -p dist/windows
+        cp *.exe dist/windows/
+        cd dist
+        7z a switch-tools-windows.zip windows
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: switch-tools-windows
+        path: dist/switch-tools-windows.zip
+        
+  release:
+    if: github.event_name == 'release'
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+      
+    - name: Upload to release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          switch-tools-linux/switch-tools-linux.tar.gz
+          switch-tools-macos/switch-tools-macos.tar.gz
+          switch-tools-windows/switch-tools-windows.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
