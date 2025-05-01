@@ -39,7 +39,7 @@ jobs:
       with:
         name: switch-tools-linux
         path: dist/switch-tools-linux.tar.gz
-           
+        
   build-windows:
     runs-on: windows-latest
     defaults:
@@ -63,6 +63,7 @@ jobs:
           pkg-config
           mingw-w64-x86_64-lz4
           mingw-w64-x86_64-zlib
+          zip
           
     - name: Configure
       run: |
@@ -77,7 +78,7 @@ jobs:
         mkdir -p dist/windows
         cp *.exe dist/windows/
         cd dist
-        7z a switch-tools-windows.zip windows
+        zip -r switch-tools-windows.zip windows
         
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
@@ -98,7 +99,6 @@ jobs:
       with:
         files: |
           switch-tools-linux/switch-tools-linux.tar.gz
-          switch-tools-macos/switch-tools-macos.tar.gz
           switch-tools-windows/switch-tools-windows.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
