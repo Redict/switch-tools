@@ -35,7 +35,7 @@ jobs:
         tar -czf switch-tools-linux.tar.gz linux
         
     - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: switch-tools-linux
         path: dist/switch-tools-linux.tar.gz
@@ -80,7 +80,7 @@ jobs:
         7z a switch-tools-windows.zip windows
         
     - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: switch-tools-windows
         path: dist/switch-tools-windows.zip
