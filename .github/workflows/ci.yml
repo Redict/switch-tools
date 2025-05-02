@@ -94,7 +94,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          switch-tools-linux/switch-tools-linux.tar.gz
+          switch-tools-linux/switch-tools-linux.zip
           switch-tools-windows/switch-tools-windows.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
