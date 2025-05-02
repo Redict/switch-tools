@@ -29,16 +29,14 @@ jobs:
       
     - name: Create package
       run: |
-        mkdir -p dist/linux
-        cp elf2nso elf2nro elf2kip build_pfs0 build_romfs nacptool npdmtool nxlink dist/linux/
-        cd dist
-        tar -czf switch-tools-linux.tar.gz linux
+        mkdir -p dist/
+        cp elf2nso elf2nro elf2kip build_pfs0 build_romfs nacptool npdmtool nxlink dist/
         
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: switch-tools-linux
-        path: dist/switch-tools-linux.tar.gz
+        path: dist/
         
   build-windows:
     runs-on: windows-latest
@@ -75,16 +73,14 @@ jobs:
       
     - name: Create package
       run: |
-        mkdir -p dist/windows
-        cp *.exe dist/windows/
-        cd dist
-        zip -r switch-tools-windows.zip windows
+        mkdir -p dist/
+        cp *.exe dist/
         
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: switch-tools-windows
-        path: dist/switch-tools-windows.zip
+        path: dist/
         
   release:
     if: github.event_name == 'release'
